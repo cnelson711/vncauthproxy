@@ -1,6 +1,7 @@
 Twisted VNC Proxy
 ===============================================
 To install on a system
+
     $ python setup.py build
     $ python setup.py install
     
