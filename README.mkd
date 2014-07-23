@@ -11,7 +11,7 @@ Requirements:
  * Twisted 10.2 or newer
  * txWS 0.6 or newer
  * A VNC server that allows reverse connections (x11vnc 0.9.13)
- * A VNC viewer that allows passwords with length > 8 (noVNC )
+ * A VNC viewer that allows passwords with length > 8 (noVNC)
 
 If your distribution insists on splitting Twisted into multiple
 packages, you will also need the Twisted Web package, usually called
