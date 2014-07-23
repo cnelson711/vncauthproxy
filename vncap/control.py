@@ -17,6 +17,7 @@ from vncap.vnc.factory import VNCProxy
 FIRST_PORT = 5800
 LAST_PORT = 5900
 
+
 class ControlProtocol(LineReceiver):
 
     def lineReceived(self, line):
@@ -66,6 +67,7 @@ class ControlProtocol(LineReceiver):
             self.sendLine("FAILED")
 
         self.transport.loseConnection()
+
 
 class ControlFactory(ServerFactory):
     protocol = ControlProtocol

@@ -47,10 +47,12 @@ vnckey = [ 23,82,107,6,35,78,88,7 ]
 #bytebit = [ 0200, 0100, 040, 020, 010, 04, 02, 01 ] # original
 bytebit = [ 01, 02, 04, 010, 020, 040, 0100, 0200 ] # VNC version
 
+
 # two password functions for VNC protocol.
 def decrypt_passwd(data):
     dk = deskey(pack('8B', *vnckey), True)
     return desfunc(data, dk)
+
 
 def generate_response(passwd, challange):
     ek = deskey((passwd+'\x00'*8)[:8], False)
@@ -62,25 +64,21 @@ def generate_response(passwd, challange):
 ###################################################
 
 
-bigbyte = [
-  0x800000L,    0x400000L,      0x200000L,      0x100000L,
-  0x80000L,     0x40000L,       0x20000L,       0x10000L,
-  0x8000L,      0x4000L,        0x2000L,        0x1000L,
-  0x800L,       0x400L,         0x200L,         0x100L,
-  0x80L,        0x40L,          0x20L,          0x10L,
-  0x8L,         0x4L,           0x2L,           0x1L
-  ]
+bigbyte = [0x800000L,    0x400000L,      0x200000L,      0x100000L,
+           0x80000L,     0x40000L,       0x20000L,       0x10000L,
+           0x8000L,      0x4000L,        0x2000L,        0x1000L,
+           0x800L,       0x400L,         0x200L,         0x100L,
+           0x80L,        0x40L,          0x20L,          0x10L,
+           0x8L,         0x4L,           0x2L,           0x1L]
 
 # Use the key schedule specified in the Standard (ANSI X3.92-1981).
 
-pc1 = [
-  56, 48, 40, 32, 24, 16,  8,    0, 57, 49, 41, 33, 25, 17,
-   9,  1, 58, 50, 42, 34, 26,   18, 10,  2, 59, 51, 43, 35,
-  62, 54, 46, 38, 30, 22, 14,    6, 61, 53, 45, 37, 29, 21,
-  13,  5, 60, 52, 44, 36, 28,   20, 12,  4, 27, 19, 11,  3
-  ]
+pc1 = [56, 48, 40, 32, 24, 16,  8,    0, 57, 49, 41, 33, 25, 17,
+       9,   1, 58, 50, 42, 34, 26,   18, 10,  2, 59, 51, 43, 35,
+       62, 54, 46, 38, 30, 22, 14,    6, 61, 53, 45, 37, 29, 21,
+       13,  5, 60, 52, 44, 36, 28,   20, 12,  4, 27, 19, 11,  3]
 
-totrot = [ 1,2,4,6,8,10,12,14,15,17,19,21,23,25,27,28 ]
+totrot = [1, 2, 4, 6, 8, 10, 12, 14, 15, 17, 19, 21, 23, 25, 27, 28]
 
 pc2 = [
   13, 16, 10, 23,  0,  4,  2, 27, 14,  5, 20,  9,
@@ -88,6 +86,7 @@ pc2 = [
   40, 51, 30, 36, 46, 54, 29, 39, 50, 44, 32, 47,
   43, 48, 38, 55, 33, 52, 45, 41, 49, 35, 28, 31
   ]
+
 
 def deskey(key, decrypt):      # Thanks to James Gillogly & Phil Karn!
     key = unpack('8B', key)
@@ -130,6 +129,7 @@ def deskey(key, decrypt):      # Thanks to James Gillogly & Phil Karn!
                 kn[n] |= bigbyte[j]
 
     return cookey(kn)
+
 
 def cookey(raw):
     key = []
@@ -298,6 +298,7 @@ SP8 = [
   0x10041040L, 0x00041000L, 0x00041000L, 0x00001040L,
   0x00001040L, 0x00040040L, 0x10000000L, 0x10041000L
   ]
+
 
 def desfunc(block, keys):
     (leftt, right) = unpack('>II', block)

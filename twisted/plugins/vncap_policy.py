@@ -11,17 +11,21 @@ policy = """
 </cross-domain-policy>
 """
 
+
 class PolicyProtocol(Protocol):
 
     def connectionMade(self):
         self.transport.write(policy)
         self.transport.loseConnection()
 
+
 class PolicyFactory(Factory):
     protocol = PolicyProtocol
 
+
 class PolicyOptions(Options):
     pass
+
 
 class PolicyServiceMaker(object):
 
@@ -32,10 +36,7 @@ class PolicyServiceMaker(object):
     options = PolicyOptions
 
     def makeService(self, options):
-        """
-        Set up a policy server.
-        """
-
         return TCPServer(843, PolicyFactory())
+
 
 servicemaker = PolicyServiceMaker()

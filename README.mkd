@@ -1,60 +1,70 @@
-Twisted VNC Authentication Proxy (TVAP) (VNCAP)
+Twisted VNC Proxy
 ===============================================
-
-This is woefully incomplete.
-
-If you are using Fx4 or earlier, you need to use a WebSocket Flash
-emulator and thus you will need to serve a Flash policy. A simple policy
-server is shipped in this package, try:
-
-    $ sudo twistd -n flashpolicy
-
-To start the server, try:
+To start the proxy server, try:
 
     $ twistd -n vncap
 
-By default, the daemon runs on TCP port 8888, bound only to localhost.
-Here are some examples for customizing the control port.
-
-Running on TCP port 8000, bound to localhost:
-
-    $ twistd -n vncap -c tcp:8000:interface=localhost
-
-Running on a local UNIX socket:
-
-    $ twistd -n vncap -c unix:/tmp/vncap.sock
+By default, the daemon accepts runs on TCP port 5500.
 
 Requirements:
 
  * Twisted 10.2 or newer
  * txWS 0.6 or newer
+ * A VNC server that allows reverse connections (x11vnc 0.9.13)
+ * A VNC viewer that allows passwords with length > 8 (noVNC )
 
 If your distribution insists on splitting Twisted into multiple
 packages, you will also need the Twisted Web package, usually called
 python-twisted-web.
 
-Controlling the Proxy
-=====================
+Control Interface
+==================
 
-To command the proxy to open ports, a JSON snippet should be sent to the
-control port. The snippet should be a JSON dictionary, with the
-following required keys:
+The interface (default port 5500), allows a program create a new 
+channel and to query the proxy for a list of active channels.
 
- * ``daddr``: The destination hostname for the VNC backend
- * ``dport``: The destination port for the VNC backend
- * ``password``: A password for the VNC frontend conection
+To create a new channel, send a JSON object in the following format:
+ * ``admin_passphrase``   : The passphrase to access the control interface.
+                            The default passphrase is 'vnc'.
+ * ``operation``          : The string "create"
+ * ``connection_timeout`` : The integer number of seconds before the channel 
+                            closes if a client or server disconnects.
+                            
+The proxy will respond with the following JSON object:
+ * ``channel_id``        : A unique int for the channel
+ * ``viewer_passphrase`` : The passphrase the viewer should use.
+ * ``server_passphrase`` : The passphrase the VNC server should use 
+                           when making a reverse connection.
 
-The following keys are optional:
+The passphrases will be strings of 32 random hexadecimal digits.
 
- * ``sport``: The preferred source port for the VNC frontend
- * ``ws``: Whether the frontend should be wrapped for WebSockets
- * ``tls``: Whether the frontend should be wrapped with TLS for SSL/WSS
+To receive a listing of all active channels (channels that have not been
+closed due to timeouts), send a JSON object in the following format:
+ * ``admin_passphrase``   : The passphrase to access the control interface.
+                            The default passphrase is 'vnc'.
+ * ``operation``          : The string "listing"
+ 
+The proxy will respond with a JSON array of objects, each object representing
+information about an active channel:
+ * ``channel_id``         : A unique int for the channel
+ * ``connection_timeout`` : The integer number of seconds before the channel 
+                            closes if a client or server disconnects.
 
-If the requsted ``sport`` is not available, one will be automatically
-assigned.
+
+Connecting to the Proxy
+========================
+
+If using x11vnc as the VNC server, simply pass in the host:port of the
+proxy and the ``server_passphrase`` of the channel to which you want to 
+connect.
+    
+    $ ./x11vnc -connect pre={"channel_id":3, "passphrase", "AF55ADDC0D696DE30D074210B1307041"}+192.168.10.165:5500
+
+If using noVNC as the VNC viewer, enter the 20 digit ``viewer_passphrase``
+as the passphrase to connect to the channel on the proxy. 
 
 TLS
-===
+====
 
 If TLS is requested, the proxy will look for SSL key and certificate
 information from hardcoded locations. The locations for the SSL files
@@ -70,3 +80,11 @@ be:
     $ openssl req -new -key keys/vncap.key -out keys/vncap.csr
     $ openssl x509 -req -in keys/vncap.csr -signkey keys/vncap.key -out
     keys/vncap.crt
+
+Backwards Compatibility
+========================
+
+If you are using Firefox 4 or earlier, you also need to to serve a
+Flash policy. A simple policy server is shipped in this package, try:
+
+    $ sudo twistd -n flashpolicy
