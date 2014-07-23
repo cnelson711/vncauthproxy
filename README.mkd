@@ -1,5 +1,9 @@
 Twisted VNC Proxy
 ===============================================
+To install on a system
+    $ python setup.py build
+    $ python setup.py install
+    
 To start the proxy server, try:
 
     $ twistd -n vncap
