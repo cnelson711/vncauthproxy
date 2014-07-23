@@ -8,8 +8,7 @@ from zope.interface import implements
 class ProxyOptions(Options):
 
     optParameters = [
-        ["control", "c", "tcp:8888:interface=localhost",
-         "Endpoint for the control socket"],
+        ["control", "c", "tcp:5500", "Endpoint for the control socket"],
     ]
 
 
